@@ -1,49 +1,54 @@
-#include"GameScene.h"
+#include "GameScene.h"
 
 using namespace KamataEngine;
 
+void GameScene::Initialize() {
+	// メンバ変数への代入処理（省略）
+	// ここにインゲームの初期化処理を書く
 
-
-void GameScene::Initialize(){
-	//メンバ変数への代入処理（省略）
-	//ここにインゲームの初期化処理を書く
-
-	//3Dモデルの生成
+	// 3Dモデルの生成
 	model_ = Model::Create();
 
-	//ワールドトランスフォームの初期化
+	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
-	//カメラの初期化
+
+	// カメラの初期化
 	camera_.Initialize();
 
+	// ファイル名を指定してテクスチャを読み込む
 	textureHandle_ = TextureManager::Load("mario.jpg");
 
-	}
+	// 自キャラの生成
+	player_ = new Player();
+
+	// 自キャラの初期化
+	player_->Initialize(model_, textureHandle_, &camera_);
+}
 
 void GameScene::Update() {
-	//ここにゲームの更新処理を書く
+	// ここにゲームの更新処理を書く
 
+	// 自キャラの更新
+	player_->Update();
+}
 
-	}
+void GameScene::Draw() {
 
-void GameScene::Draw(){
-
-	//DirectXCommonインスタンスの取得
+	// DirectXCommonインスタンスの取得
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 	// 3Dモデル描画前処理
 	Model::PreDraw(dxCommon->GetCommandList());
 
-	// 3Dモデル描画
-	model_->Draw(worldTransform_, camera_, textureHandle_);
+	// 自キャラの描画
+	player_->Draw();
 
 	// 3Dモデル描画後処理
 	Model::PostDraw();
+}
 
-	}
-
-GameScene::~GameScene(){
-delete model_;
-	}
-
-
+GameScene::~GameScene() {
+	delete model_;
+	// 自キャラの解放
+	delete player_;
+}
