@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "MyMath.h"
+#include "Skydome.h"
 
 using namespace KamataEngine;
 
@@ -9,6 +10,7 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -17,15 +19,19 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 
 	// ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("mario.jpg");
+	
+	modelBlock_ = Model::CreateFromOBJ("Block");
+	model_ = Model::CreateFromOBJ("Player");
 
-	// 自キャラの生成
+	// 自キャラの生成   (player)
 	player_ = new Player();
-
-	modelBlock_ = Model::CreateFromOBJ("cube");
-
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &camera_);
+	player_->Initialize(model_, &camera_);
+
+	// 自キャラの生成   (skydome)
+	skydome_ = new Skydome();
+	// 自キャラの初期化
+	skydome_->Initialize(modelSkydome_, &camera_);
 
 	// 要素数
 	const uint32_t kNumBlockVirtical = 10;
@@ -55,7 +61,6 @@ void GameScene::Initialize() {
 	}
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
-
 }
 
 void GameScene::Update() {
@@ -82,7 +87,7 @@ void GameScene::Update() {
 	debugCamera_->Update();
 
 #ifdef _DEBUG
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+	if (Input::GetInstance()->TriggerKey(DIK_0)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
 #endif // _DEBUG
@@ -109,7 +114,8 @@ void GameScene::Draw() {
 	Model::PreDraw(dxCommon->GetCommandList());
 
 	// 自キャラの描画
-	/*player_->Draw();*/
+	skydome_->Draw();
+	player_->Draw();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
