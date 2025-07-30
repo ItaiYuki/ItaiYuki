@@ -26,12 +26,16 @@ void GameScene::Initialize() {
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	
+
 	GenerateBilocks();
 
 	// 自キャラの生成   (player)
 	player_ = new Player();
 	// 自キャラの初期化
-	player_->Initialize(model_, &camera_);
+	player_->Initialize(model_, &camera_, playerPosition);
 
 	// 自キャラの生成   (skydome)
 	skydome_ = new Skydome();
