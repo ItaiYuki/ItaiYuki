@@ -13,7 +13,7 @@ public:
 	void Draw();
 
 	// 歩行の速さ
-	static inline const float kWalkSpeed = 0.04f;
+	static inline const float kWalkSpeed = 0.03f;
 
 	// 速度
 	KamataEngine::Vector3 velocity_ = {};

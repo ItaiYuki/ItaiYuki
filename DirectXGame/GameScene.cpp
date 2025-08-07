@@ -15,6 +15,8 @@ void GameScene::Initialize() {
 
 	modelEnemy_ = Model::CreateFromOBJ("enemy");
 
+	modelDeathparticles_ = Model::CreateFromOBJ("deathParticle");
+
 	worldTransform_.Initialize();
 
 	// 自キャラの生成
@@ -88,12 +90,16 @@ void GameScene::Initialize() {
 	// Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(15, 18);
 	// enemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 
-	for (int32_t i = 0; i < 5; i++) {
+	for (int32_t i = 0; i < 1; i++) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(6 + i, 18);
 		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
+
+	// 仮の生成処理。後で消す
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelDeathparticles_, &camera_, playerPosition);
 }
 
 // 更新処理
@@ -147,6 +153,11 @@ void GameScene::Update() {
 	}
 	// 全ての当たり判定を行う
 	CheckAllCollisions();
+
+	// モデルパーティクル
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
 }
 // 描画処理
 void GameScene::Draw() {
@@ -170,6 +181,11 @@ void GameScene::Draw() {
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
+	}
+
+	// モデルパーティクル
+	if (deathParticles_) {
+		deathParticles_->Draw();
 	}
 
 	Model::PostDraw();
@@ -200,6 +216,8 @@ GameScene::~GameScene() {
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
 	}
+
+	delete deathParticles_;
 }
 
 void GameScene::CheckAllCollisions() {
