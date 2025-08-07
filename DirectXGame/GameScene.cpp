@@ -1,3 +1,4 @@
+
 #include "GameScene.h"
 #include "MyMath.h"
 
@@ -12,6 +13,8 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	modelPlayer_ = Model::CreateFromOBJ("player");
+
+	modelEnemy_ = Model::CreateFromOBJ("enemy");
 
 	worldTransform_.Initialize();
 
@@ -60,7 +63,7 @@ void GameScene::Initialize() {
 	GenerateBlocks();
 
 	// 座標をマップ地プ番号で指定
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 
 	camera_.Initialize();
@@ -80,6 +83,12 @@ void GameScene::Initialize() {
 	// マップチップデータのセット
 	// 自キャラの生成と初期化
 	player_->SetMapChipField(mapChipField_);
+
+	// 敵
+	enemy_ = new Enemy();
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(15, 18);
+
+	enemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
 }
 
 // 更新処理
@@ -127,6 +136,8 @@ void GameScene::Update() {
 	}
 
 	skydome_->Update();
+
+	enemy_->Update();
 }
 // 描画処理
 void GameScene::Draw() {
@@ -147,6 +158,7 @@ void GameScene::Draw() {
 
 	skydome_->Draw();
 	player_->Draw();
+	enemy_->Draw();
 
 	Model::PostDraw();
 }
@@ -171,6 +183,8 @@ GameScene::~GameScene() {
 	delete mapChipField_;
 
 	delete cameraController_;
+
+	delete enemy_;
 }
 
 void GameScene::GenerateBlocks() {
