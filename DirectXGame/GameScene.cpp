@@ -1,9 +1,8 @@
-
 #include "GameScene.h"
 #include "MyMath.h"
 
 using namespace KamataEngine;
-// 初期化/////////////////////////////////////////////////////////////
+// 初期化
 void GameScene::Initialize() {
 
 	model_ = KamataEngine::Model::Create();
@@ -77,9 +76,13 @@ void GameScene::Initialize() {
 	// カメラ移動範囲
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
+
+	// マップチップデータのセット
+	// 自キャラの生成と初期化
+	player_->SetMapChipField(mapChipField_);
 }
 
-// 更新/////////////////////////////////////////////////////////////////////////////////////
+// 更新処理
 void GameScene::Update() {
 	// 自キャラの更新
 	player_->Update();
@@ -125,7 +128,7 @@ void GameScene::Update() {
 
 	skydome_->Update();
 }
-// 描画/////////////////////////////////////////////////////////////////////////////////
+// 描画処理
 void GameScene::Draw() {
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
@@ -147,7 +150,7 @@ void GameScene::Draw() {
 
 	Model::PostDraw();
 }
-// デストラクタ////////////////////////////////////////////////////////////////////////////////
+// デストラクタ
 GameScene::~GameScene() {
 	delete model_;
 	// 自キャラの解放
