@@ -52,6 +52,9 @@ public:
 	// デストラクタ
 	~GameScene();
 
+	// デスフラグのgetter
+	bool IsFinished() const { return finished_; }
+
 private:
 	KamataEngine::WorldTransform worldTransform_;
 
@@ -62,4 +65,19 @@ private:
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
 
 	bool isDebugCameraActive_ = false;
+
+	// ゲームのフェーズ（型）
+	enum class Phase {
+		kPlay,  // ゲームプレイ
+		kDeath, // デス演出
+	};
+
+	// ゲームの現在フェーズ（変数）
+	Phase phase_;
+
+	// フェーズの切り替え
+	void ChangePhase();
+
+	// 終了フラグ
+	bool finished_ = false;
 };

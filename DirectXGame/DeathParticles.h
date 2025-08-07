@@ -17,6 +17,9 @@ public:
 	// 描画
 	void Draw();
 
+	// デスフラグのgetter
+	bool IsFinished() const { return finished_; }
+
 private:
 	// モデル
 	KamataEngine::Model* model_ = nullptr;
@@ -37,9 +40,6 @@ private:
 	// 分割した１個分の角度
 	static inline const float kAngleUnit = 2.0f * std::numbers::pi_v<float> / kNumParticles;
 
-	// 終了フラグ
-	bool isFinished_ = false;
-
 	// 経過時間カウント
 	float counter_ = 0.0f;
 
@@ -47,4 +47,7 @@ private:
 	ObjectColor objectColor_;
 	// 色の数値
 	Vector4 color_;
+
+	// 終了フラグ
+	bool finished_ = false;
 };

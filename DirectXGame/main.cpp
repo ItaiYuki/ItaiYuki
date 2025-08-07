@@ -1,46 +1,127 @@
 #include "GameScene.h"
 #include "KamataEngine.h"
+#include "TitleScene.h"
 #include <Windows.h>
 
 using namespace KamataEngine;
 
+GameScene* gameScene = nullptr;
+TitleScene* titleScene = nullptr;
+
+enum class Scene {
+	kUnknown = 0,
+	kTitle,
+	kGame,
+};
+
+// 現在シーン（型）
+Scene scene = Scene::kUnknown;
+
+// シーン切り替え処理
+void ChangeScene() {
+	switch (scene) {
+	case Scene::kTitle:
+		if (titleScene->IsFinished()) {
+			// シーン変更
+			scene = Scene::kGame;
+			// 旧シーンの解放
+			delete titleScene;
+			titleScene = nullptr;
+			// 新シーンの生成と初期化
+			gameScene = new GameScene;
+			gameScene->Initialize();
+		}
+		break;
+	case Scene::kGame:
+		if (gameScene->IsFinished()) {
+			// シーン変更
+			scene = Scene::kTitle;
+			delete gameScene;
+			gameScene = nullptr;
+
+			titleScene = new TitleScene;
+			titleScene->Initialize();
+		}
+		break;
+	}
+}
+
+// シーンの更新
+void UpdateScene() {
+
+	switch (scene) {
+	case Scene::kTitle:
+		titleScene->Update();
+		break;
+	case Scene::kGame:
+		gameScene->Update();
+		break;
+	}
+}
+
+// シーンの描画
+void DrawScene() {
+	switch (scene) {
+	case Scene::kTitle:
+		titleScene->Draw();
+		break;
+	case Scene::kGame:
+		gameScene->Draw();
+		break;
+	}
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+	// ゲームシーンのインスタンス生成
 
 	// エンジンの初期化
 	KamataEngine::Initialize(L"LE2D_06_イタイ_ユウキ_AL3");
+	// 最初のシーンの初期化
+	scene = Scene::kTitle;
+	titleScene = new TitleScene;
+	titleScene->Initialize();
 
-	//DirectXCommonインスタンスの取得
+	//// ゲームシーンの初期化
+	// gameScene->Initialize();
+
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
-
-	// ゲームシーンのインスタンス生成
-	GameScene* gameScene = new GameScene();
-
-	// ゲームシーンの初期化
-	gameScene->Initialize();
 
 	// メインループ
 	while (true) {
+		// エンジンの更新
 		if (KamataEngine::Update()) {
+
 			break;
 		}
 
-		//ゲームシーンの更新
-		gameScene->Update();
+		// titleScene->Update();
+		//   シーン切り替え
+		ChangeScene();
+		// シーン更新
+		UpdateScene();
+
+		//// ゲームシーンの更新
+		// gameScene->Update();
 
 		// 描画開始
 		dxCommon->PreDraw();
 
-		//ゲームシーンの描画
-		gameScene->Draw();
+		// ゲームシーンの描画
+		// titleScene->Draw();
+
+		// シーンの描画
+		DrawScene(); //
+
+		//// ゲームシーンの描画
+		// gameScene->Draw();
 
 		// 描画終了
 		dxCommon->PostDraw();
 	}
-
-	//ゲームシーンの開放
+	// ゲームシーンの解放
+	delete titleScene;
 	delete gameScene;
-
 	// nullptrの代入
 	gameScene = nullptr;
 

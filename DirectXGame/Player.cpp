@@ -25,7 +25,7 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Player::Update() {
 	// １移動入力//
 	InputMove();
@@ -92,7 +92,7 @@ void Player::Update() {
 	// ⑦旋回制御
 	AnimateTurn();
 }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
 
@@ -117,10 +117,15 @@ AABB Player::GetAABB() {
 	return aabb;
 }
 
+// 当たったら
 void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;
-	// ジャンプ開始（仮処理）
-	velocity_ += Vector3(0, 1, 0);
+
+	// 当たったら死ぬ　
+	isDead_ = true;
+
+	////ジャンプ開始（仮処理）
+	// velocity_ += Vector3(0,1,0);
 }
 
 void Player::InputMove() {
@@ -130,7 +135,7 @@ void Player::InputMove() {
 
 			// 左右加速
 			Vector3 acceleration = {};
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) 
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) ///////////////////////////
 			{
 				acceleration.x += kAcceleration;
 				if (velocity_.x < 0.0f) {
@@ -145,7 +150,7 @@ void Player::InputMove() {
 					turnTimer_ = kTimeTurn;
 				}
 
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) 
+			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) ////////////////////
 			{
 				acceleration.x -= kAcceleration;
 				//// 右移動中の左入力
@@ -193,7 +198,7 @@ void Player::CheckMapCollision(CollisionMapInfo& info) {
 	CheckMapCollisionLeft(info);  // 左
 }
 
-// マップ衝突チェック　上
+// マップ衝突チェック　上//////////////////////////////////////////
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// 上昇あり？
 	if (info.move.y <= 0) {
@@ -248,7 +253,7 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	}
 }
 
-/// マップ衝突チェック　下
+/// マップ衝突チェック　下/////////////////////////////////////////////////////////////
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	// 下降あり？
 	if (info.move.y >= 0) {
@@ -303,7 +308,7 @@ void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　右
+// マップ衝突チェック　右//////////////////////////////////////////
 void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	// 右移動あり？
 	if (info.move.x <= 0) {
@@ -352,7 +357,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　左
+// マップ衝突チェック　左//////////////////////////////////////////
 void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 	// 左移動あり？
 	if (info.move.x >= 0) {
