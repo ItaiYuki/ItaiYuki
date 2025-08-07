@@ -1,7 +1,6 @@
 #define NOMINMAX
 #include "Player.h"
 #include "MapChipField.h"
-#include "MyMath.h"
 #include <algorithm>
 #include <numbers>
 
@@ -26,7 +25,7 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Player::Update() {
 	// １移動入力//
 	InputMove();
@@ -93,9 +92,36 @@ void Player::Update() {
 	// ⑦旋回制御
 	AnimateTurn();
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
+
+Vector3 Player::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+AABB Player::GetAABB() {
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
+
+	return aabb;
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+	(void)enemy;
+	// ジャンプ開始（仮処理）
+	velocity_ += Vector3(0, 1, 0);
+}
 
 void Player::InputMove() {
 	if (onGround_) {
@@ -104,7 +130,7 @@ void Player::InputMove() {
 
 			// 左右加速
 			Vector3 acceleration = {};
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) ///////////////////////////
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) 
 			{
 				acceleration.x += kAcceleration;
 				if (velocity_.x < 0.0f) {
@@ -119,7 +145,7 @@ void Player::InputMove() {
 					turnTimer_ = kTimeTurn;
 				}
 
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) ////////////////////
+			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) 
 			{
 				acceleration.x -= kAcceleration;
 				//// 右移動中の左入力
@@ -167,7 +193,7 @@ void Player::CheckMapCollision(CollisionMapInfo& info) {
 	CheckMapCollisionLeft(info);  // 左
 }
 
-// マップ衝突チェック　上//////////////////////////////////////////
+// マップ衝突チェック　上
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// 上昇あり？
 	if (info.move.y <= 0) {
@@ -222,7 +248,7 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	}
 }
 
-/// マップ衝突チェック　下/////////////////////////////////////////////////////////////
+/// マップ衝突チェック　下
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	// 下降あり？
 	if (info.move.y >= 0) {
@@ -277,7 +303,7 @@ void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　右//////////////////////////////////////////
+// マップ衝突チェック　右
 void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	// 右移動あり？
 	if (info.move.x <= 0) {
@@ -326,7 +352,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　左//////////////////////////////////////////
+// マップ衝突チェック　左
 void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 	// 左移動あり？
 	if (info.move.x >= 0) {
