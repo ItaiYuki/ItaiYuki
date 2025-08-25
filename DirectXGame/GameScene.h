@@ -2,6 +2,7 @@
 #include "CameraController.h"
 #include "DeathParticles.h"
 #include "Enemy.h"
+#include "Fade.h"
 #include "KamataEngine.h"
 #include "MapChipField.h"
 #include "Player.h"
@@ -68,8 +69,10 @@ private:
 
 	// ゲームのフェーズ（型）
 	enum class Phase {
-		kPlay,  // ゲームプレイ
-		kDeath, // デス演出
+		kFadeIn,  // フェードイン
+		kPlay,    // ゲームプレイ
+		kDeath,   // デス演出
+		kFadeOut, // フェードアウト
 	};
 
 	// ゲームの現在フェーズ（変数）
@@ -80,4 +83,7 @@ private:
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	// フェード
+	Fade* fade_ = nullptr;
 };
