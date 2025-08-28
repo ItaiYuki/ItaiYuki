@@ -15,46 +15,26 @@ void GameScene::Initialize() {
 
 	modelEnemy_ = Model::CreateFromOBJ("enemy");
 
+	modelGoal_ = Model::Create();
+
+	textureHandle_ = TextureManager::Load("Goal.png");
+
 	modelDeathparticles_ = Model::CreateFromOBJ("deathParticle");
 
 	worldTransform_.Initialize();
 
+	worldTransformGoal_.Initialize();
+
 	// 自キャラの生成
 	player_ = new Player();
 	// 自キャラの初期化
-	//
-	//
-	//
-	// player_->Initialize(modelPlayer_, &camera_,playerPosition);
-
+	
 	// 生成
 	skydome_ = new Skydome();
 	// 初期化
 	skydome_->Initialize(modelSkydome_, &camera_);
 
-	// 要素数
-	// const uint32_t kNumBlockVirtical = 10;
-	// const uint32_t kNumBlockHorizontal = 20;
-	//// ブロック一個分の横幅
-	// const float kBlockWidth = 2.0f;
-	// const float kBlockHeigth = 2.0f;
-	//  要素数を変更する
-	// worldTransformBlocks_.resize(kNumBlockVirtical);
-	// for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-	//	worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	// }
-
-	//// キューブの生成
-	// for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-	//	for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-	//		if ((i + j) % 2 == 0)
-	//			continue;
-	//		worldTransformBlocks_[i][j] = new WorldTransform();
-	//		worldTransformBlocks_[i][j]->Initialize();
-	//		worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
-	//		worldTransformBlocks_[i][j]->translation_.y = kBlockHeigth * i;
-	//	}
-	// }
+	
 	debugCamera_ = new DebugCamera(1280, 720);
 
 	mapChipField_ = new MapChipField;
@@ -66,6 +46,10 @@ void GameScene::Initialize() {
 	// 座標をマップ地プ番号で指定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
+
+	Vector3 goalPosition = mapChipField_->GetMapChipPositionByIndex(40, 5);
+
+	worldTransformGoal_.translation_ = goalPosition;
 
 	camera_.Initialize();
 
@@ -85,12 +69,11 @@ void GameScene::Initialize() {
 	// 自キャラの生成と初期化
 	player_->SetMapChipField(mapChipField_);
 
-	// Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(15, 18);
-	// enemy_->Initialize(modelEnemy_, &camera_, enemyPosition);
+	
 
-	for (int32_t i = 0; i < 2; i++) {
+	for (int32_t i = 0; i < 100; i++) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10 + i, 18);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(10 + i * 20, 18);
 		newEnemy->Initialize(modelEnemy_, &camera_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
@@ -279,6 +262,8 @@ void GameScene::Update() {
 
 		break;
 	}
+	worldTransformGoal_.matWorld_ = MakeAffineMatrix(worldTransformGoal_.scale_, worldTransformGoal_.rotation_, worldTransformGoal_.translation_);
+	worldTransformGoal_.TransferMatrix();
 }
 
 // 描画
@@ -297,6 +282,8 @@ void GameScene::Draw() {
 			modelBlock_->Draw(*worldTransformBlock, camera_);
 		}
 	}
+
+	modelGoal_->Draw(worldTransformGoal_, camera_, textureHandle_);
 
 	skydome_->Draw();
 
@@ -365,6 +352,16 @@ void GameScene::ChangePhase() {
 			deathParticles_ = new DeathParticles;
 			deathParticles_->Initialize(modelDeathparticles_, &camera_, deathParticlesPosition);
 		}
+
+		Vector3 playerPosition = player_->GetWorldPosition();
+
+		if (playerPosition.x >= 40 && playerPosition.y <= 5) {
+			phase_ = Phase::kFadeOut;
+
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+
+			gameClear = true;
+			}
 
 		break;
 

@@ -2,7 +2,7 @@
 using namespace KamataEngine;
 
 void Skydome::Initialize(Model* model, Camera* camera) {
-	assert(model);
+	/*assert(model);*/
 	model_ = model;
 	
 	camera_ = camera;

@@ -22,6 +22,8 @@ public:
 	KamataEngine::Model* modelEnemy_ = nullptr;
 	// デスパーティークル
 	KamataEngine::Model* modelDeathparticles_ = nullptr;
+	// ゴール
+	KamataEngine::Model* modelGoal_ = nullptr;
 
 	// 自キャラ
 	Player* player_ = nullptr;
@@ -56,8 +58,14 @@ public:
 	// デスフラグのgetter
 	bool IsFinished() const { return finished_; }
 
+	bool IsClear() const { return gameClear; }
+
 private:
+	uint32_t textureHandle_ = 0;
+
 	KamataEngine::WorldTransform worldTransform_;
+
+	KamataEngine::WorldTransform worldTransformGoal_;
 
 	KamataEngine::Camera camera_;
 
@@ -66,6 +74,8 @@ private:
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
 
 	bool isDebugCameraActive_ = false;
+
+	bool gameClear = false;
 
 	// ゲームのフェーズ（型）
 	enum class Phase {

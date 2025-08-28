@@ -1,12 +1,14 @@
-#include "TitleScene.h"
+#include "GameClear.h"
 #include "Math.h"
-#include "MyMath.h"
 #include <numbers>
 
-void TitleScene::Initialize() {
+void GameClear::Initialize() {
 	// 3Dモデルの生成
-	modelTitle_ = Model::CreateFromOBJ("titleFont", true);
+	modelClear_ = Model::CreateFromOBJ("clearFont", true);
 	modelPlayer_ = Model::CreateFromOBJ("player");
+
+	// 画像読み込み
+	textureHandle_ = TextureManager::Load("gameClear.png");
 
 	// カメラの初期化
 	camera_.Initialize();
@@ -25,9 +27,12 @@ void TitleScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
+	// スプライトインスタンスの生成
+	sprite_ = Sprite::Create(textureHandle_, {0, 0});
 }
 
-void TitleScene::Update() {
+void GameClear::Update() {
 
 	switch (phase_) {
 
@@ -53,29 +58,25 @@ void TitleScene::Update() {
 			finished_ = true;
 		}
 	}
-
-	worldTransformTitle_.matWorld_ = MakeAffineMatrix(worldTransformTitle_.scale_, worldTransformTitle_.rotation_, worldTransformTitle_.translation_);
-	worldTransformTitle_.TransferMatrix();
-
-	////タイトル終了
-	// if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-	//	finished_ = true;
-	// }
-
-	//// フェード
-	// fade_->Update();
 }
 
-void TitleScene::Draw() {
+void GameClear::Draw() {
 
 	// DirectXCommonインスタンスの取得
 	DirectXCommon* dxCommon_ = DirectXCommon::GetInstance();
+
+	// スプライト描画前処理
+	Sprite::PreDraw(dxCommon_->GetCommandList());
+
+	sprite_->Draw();
+
+	Sprite::PostDraw();
 
 	// ３Dモデル描画前処理
 	Model::PreDraw(dxCommon_->GetCommandList());
 
 	// ここに３Dモデルインスタンスの描画処理を記述する
-	modelTitle_->Draw(worldTransformTitle_, camera_);
+	/*modelTitle_->Draw(worldTransformTitle_, camera_);*/
 	modelPlayer_->Draw(worldTransformPlayer_, camera_);
 	// ３Dモデル描画後処理
 	Model::PostDraw();
@@ -83,10 +84,12 @@ void TitleScene::Draw() {
 	fade_->Draw();
 }
 
-TitleScene::~TitleScene() {
+GameClear::~GameClear() {
 	// モデル
-	delete modelTitle_;
+	delete modelClear_;
 	delete modelPlayer_;
+
+	delete sprite_;
 
 	// フェード
 	delete fade_;

@@ -14,6 +14,7 @@ void CameraController::Update() {
 
 	// 座標補講によりゆったり追従
 	camera_.translation_.x = Lerp(camera_.translation_.x, targetPosition_.x, kInterpolationRate);
+	camera_.translation_.y = Lerp(camera_.translation_.y, targetPosition_.y, kInterpolationRate);
 
 	// 追従対象が画面外に出さないように補正
 	camera_.translation_.x = max(camera_.translation_.x, camera_.translation_.x + targetMargin.left);
@@ -30,7 +31,7 @@ void CameraController::Update() {
 	camera_.UpdateMatrix();
 }
 /// <summary>
-/// /////////////////////////////////////////////////////////////////
+/// 
 /// </summary>
 void CameraController::Reset() {
 	// 追従対象のワールドトランスフォームを参照

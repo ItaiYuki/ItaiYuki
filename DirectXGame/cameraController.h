@@ -29,7 +29,8 @@ public:
 	};
 
 	// カメラ移動範囲
-	Rect movableArea_ = {0, 100, 0, 100};
+	CameraController::Rect movableArea_ = {10.156f, 100 - 12.0f, 0.0f, 20.0f};
+
 
 	void SetMovableArea(Rect area) { movableArea_ = area; }
 
@@ -43,11 +44,11 @@ public:
 	static inline const float kVelocityBias = 4.0f;
 
 	// 追従対象の各方向へのカメラ移動範囲
-	static inline const Rect targetMargin = {-9.0f, 9.0f, -5.0f, 5.0f};
+	static inline const Rect targetMargin = {-9.0f, 9.0f, -9.0f, 9.0f};
 
 private:
 	KamataEngine::Camera camera_;
 	Player* target_ = nullptr;
 	// 追従対象とカメラの座標の差（オフセット）
-	Vector3 targetOffset_ = {0, 0, -15.0f};
+	Vector3 targetOffset_ = {0, 0, -28.0f};
 };

@@ -10,7 +10,7 @@ using namespace MathUtility;
 
 void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const Vector3& position) {
 	// NULLポインタチェック
-	assert(model);
+	/*assert(model);*/
 
 	// 引数の内容をメンバ変数に記録
 	camera_ = camera;
@@ -25,7 +25,7 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Player::Update() {
 	// １移動入力//
 	InputMove();
@@ -54,36 +54,7 @@ void Player::Update() {
 	// ⑥接地状態の切り替え
 	CheckMapLanding(collisionMapInfo_);
 
-	//// 着地フラグ
-	// bool landing = false;
-	//// 地面との当たり判定
-	//// 下降中?
-	// if (velocity_.y < 0) {
-	//	// Y座標が地面以下になったら着地
-	//	if (worldTransform_.translation_.y <= 1.0f) {
-	//		landing = true;
-	//	}
-	// }
-	//// 接地判定
-	// if (onGround_) {
-	//	// ジャンプ開始
-	//	if (velocity_.y > 0.0f) {
-	//		// 空中状態に移行
-	//		onGround_ = false;
-	//	}
-	// } else {
-	//	// 着地
-	//	if (landing) {
-	//		// めり込み
-	//		worldTransform_.translation_.y = 1.0f;
-	//		// 摩擦で横方向速度が減哀する
-	//		velocity_.x *= (1.0f - kAttenuation);
-	//		// 下方向速度をリセット
-	//		velocity_.y = 0.0f;
-	//		// 接地状態に移行
-	//		onGround_ = true;
-	//	}
-	// }
+	
 
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
@@ -91,8 +62,12 @@ void Player::Update() {
 
 	// ⑦旋回制御
 	AnimateTurn();
+
+	if (worldTransform_.translation_.y <= 0) {
+		isDead_ = true;
+	}
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
 
@@ -124,8 +99,7 @@ void Player::OnCollision(const Enemy* enemy) {
 	// 当たったら死ぬ　
 	isDead_ = true;
 
-	////ジャンプ開始（仮処理）
-	// velocity_ += Vector3(0,1,0);
+	
 }
 
 void Player::InputMove() {
@@ -135,7 +109,7 @@ void Player::InputMove() {
 
 			// 左右加速
 			Vector3 acceleration = {};
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) ///////////////////////////
+			if (Input::GetInstance()->PushKey(DIK_RIGHT)) 
 			{
 				acceleration.x += kAcceleration;
 				if (velocity_.x < 0.0f) {
@@ -150,7 +124,7 @@ void Player::InputMove() {
 					turnTimer_ = kTimeTurn;
 				}
 
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) ////////////////////
+			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) 
 			{
 				acceleration.x -= kAcceleration;
 				//// 右移動中の左入力
@@ -198,7 +172,7 @@ void Player::CheckMapCollision(CollisionMapInfo& info) {
 	CheckMapCollisionLeft(info);  // 左
 }
 
-// マップ衝突チェック　上//////////////////////////////////////////
+// マップ衝突チェック　上
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// 上昇あり？
 	if (info.move.y <= 0) {
@@ -253,7 +227,7 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	}
 }
 
-/// マップ衝突チェック　下/////////////////////////////////////////////////////////////
+/// マップ衝突チェック　下
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	// 下降あり？
 	if (info.move.y >= 0) {
@@ -308,7 +282,7 @@ void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　右//////////////////////////////////////////
+// マップ衝突チェック　右
 void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	// 右移動あり？
 	if (info.move.x <= 0) {
@@ -357,7 +331,7 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	}
 }
 
-// マップ衝突チェック　左//////////////////////////////////////////
+// マップ衝突チェック　左
 void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 	// 左移動あり？
 	if (info.move.x >= 0) {
@@ -404,6 +378,8 @@ void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 		// 壁に当たったことを記録する
 		info.hitWal = true;
 	}
+
+	
 }
 
 // ③判断結果を反映して移動させる

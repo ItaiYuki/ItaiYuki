@@ -2,16 +2,19 @@
 #include "KamataEngine.h"
 #include "TitleScene.h"
 #include <Windows.h>
+#include "GameClear.h"
 
 using namespace KamataEngine;
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+GameClear* gameClear = nullptr;
 
 enum class Scene {
 	kUnknown = 0,
 	kTitle,
 	kGame,
+	kClear
 };
 
 // 現在シーン（型）
@@ -35,10 +38,31 @@ void ChangeScene() {
 	case Scene::kGame:
 		if (gameScene->IsFinished()) {
 			// シーン変更
-			scene = Scene::kTitle;
+
+			if (gameScene->IsClear()) {
+				scene = Scene::kClear;
+				gameClear = new GameClear;
+				gameClear->Initialize();
+			} else {
+				scene = Scene::kTitle;
+				titleScene = new TitleScene;
+				titleScene->Initialize();
+				}
+			
+
 			delete gameScene;
 			gameScene = nullptr;
 
+		}
+		break;
+	case Scene::kClear:
+		if (gameClear->IsFinished()) {
+			// シーン変更
+			scene = Scene::kTitle;
+			// 旧シーンの解放
+			delete gameClear;
+			gameClear = nullptr;
+			// 新シーンの生成と初期化
 			titleScene = new TitleScene;
 			titleScene->Initialize();
 		}
@@ -56,6 +80,9 @@ void UpdateScene() {
 	case Scene::kGame:
 		gameScene->Update();
 		break;
+	case Scene::kClear:
+		gameClear->Update();
+		break;
 	}
 }
 
@@ -67,6 +94,9 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+		break;
+	case Scene::kClear:
+		gameClear->Draw();
 		break;
 	}
 }
